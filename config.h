@@ -18,7 +18,7 @@ struct CompteEnBanque{
   int noCompte;
 } CompteEnBanque;
 struct Banque{
- struct CompteEnBanque comptes[NBRCOMPTESENBANQUE];
+ int comptes[NBRCOMPTESENBANQUE];
 } Banque;
 
 

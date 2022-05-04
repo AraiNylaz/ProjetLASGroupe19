@@ -48,6 +48,9 @@ int main(int argc, char **argv)
 
     struct CompteEnBanque compte;
     struct Banque banque;
+    int sem_id, shm_id;
+    int montantArgument;
+    int IDCompteArgument;
 
     while (!end) {
 
@@ -56,9 +59,9 @@ int main(int argc, char **argv)
 
         smalloc((sizeof(CompteEnBanque) * NBRCOMPTESENBANQUE)); //TODO
         
-        int sem_id, shm_id;
-        sshmget(SHMKEY, sizeof(CompteEnBanque)*10, 0);
-        sem_get(SEMKEY, 2);
+        
+        shm_id = sshmget(SHMKEY, sizeof(CompteEnBanque)*10, 0);
+        sem_id = sem_get(SEMKEY, 2);
         sshmat(shm_id);
 
         for (int i = 0; i < NBRCOMPTESENBANQUE; i++)
@@ -69,9 +72,20 @@ int main(int argc, char **argv)
                 printf("numero de compte invalide... réessayez\n");
                 continue;
             }
-            
+            sem_down0(sem_id);
+            if(banque.comptes[compte.noCompte] - montantArgument < 0){
+                printf("Limite depassee.  Solde insuffisant sur le compte\n");
+                continue;
+            }
+            banque.comptes[noCompte] += montantArgument;
+            banque.comptes[IDCompteArgument] -= montantArgument;
+            sem_up0(sem_id);
+
         }
             
     }
+    sem_delete(sem_id);
+    sshmdelete(sem_id);
     sclose(sockfd);
+    _exit(0);
 }
