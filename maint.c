@@ -21,7 +21,7 @@ int main (int agrc , char* argv){
     case type == 1:
     //crée la mémoire partagée
         printf("type=1");
-        shm_id = sshmget(SHMKEY, Banque*sizeof(int*), IPC_CREAT | PERM);
+        shm_id = sshmget(SHMKEY, NBRCOMPTESENBANQUE*sizeof(int), IPC_CREAT | PERM);
         sem_id = sem_create(SEMKEY,1,PERM,1);
         printf("%d et %d ont bien été crées",shm_id,sem_id);
         break;
