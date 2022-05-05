@@ -5,12 +5,11 @@
 #include "utils_v1.h"
 
 int main(int argc, char* argv){
-    int numCompte = atoi(argv[1]);
-    int montant=atoi(argv[2]);
+    int numCompte = argv[1];
+    int montant= argv[2];
     int sem_id=sem_get(SEMKEY,1);
     int shm_id=sshmget(SHMKEY,sizeof(int),PERM);
     
-        
     sem_down0(sem_id);
     Banque* livreDeCompte = sshmat(shm_id);
     if (checkNeg(montant)){
