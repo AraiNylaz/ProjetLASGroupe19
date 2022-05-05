@@ -12,13 +12,8 @@
 
 
 
-<<<<<<< HEAD
 int main (int argc , char *argv[]){
     int type= atoi(argv[1]) ;
-=======
-int main (int agrc , char* argv){
-    int type = argv[1] ;
->>>>>>> 5887ef1df800827416dd1ac5e7b0ac028e9deb23
     int shm_id;
     int sem_id;
     switch(type)
@@ -41,7 +36,7 @@ int main (int agrc , char* argv){
     //réserve la mémoire partagée
         printf("type=3");
         sem_down0(sem_id);
-        sleep(argv[2]);
+        sleep(atoi(argv[2]));
         sem_up0(sem_id);
         break;
     default:
