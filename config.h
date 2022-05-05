@@ -39,6 +39,9 @@ typedef struct CompteEnBanque{
 int noCompte;
 int solde;
 }CompteEnBanque;
+struct Banque{
+ int comptes[NBRCOMPTESENBANQUE];
+} Banque;
 
 #endif
 
