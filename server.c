@@ -46,6 +46,7 @@ int main(int argc, char **argv){
     int numeroCompteSource;
     int numeroCompteDestination;
     struct CompteEnBanque compte[NBRCOMPTESENBANQUE]; 
+    struct CompteEnBanque *compteTemp; //tableau de comptes
     //TODO faire en sorte que tous les comptes soient enregistrés en memoire...
 
     //tant que ! ctrlC --> run
@@ -60,7 +61,12 @@ int main(int argc, char **argv){
         numeroCompteDestination = responseClient.noCompteDestination;
 
         // allocation des 1000 comptes de la banque
-        smalloc((sizeof(CompteEnBanque) * NBRCOMPTESENBANQUE)); //TODO
+        if((compteTemp = (CompteEnBanque*)malloc((sizeof(CompteEnBanque) * NBRCOMPTESENBANQUE))) == NULL){ //TODO
+           perror("erreur Malloc tableau CompteEnBanque");
+           _exit(3);
+        }
+        
+        returnValue = sread(newsockfd, compteTemp, sizeof(ResponseClient));
         
         //get semaphores et sharedmemory + attach
         shm_id = sshmget(SHMKEY, sizeof(ResponseClient), 0);
