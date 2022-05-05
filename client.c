@@ -3,21 +3,21 @@
 #include <unistd.h>
 
 #include "utils_v1.h"
+#include "config.h"
 
 #define MAXVIREMENTRECURRENT 100
 #define MAXCHAR 100
-#define HEARTBEAT 7777
+#define HEARTBEAT -1
+#define VIREMENT 0
 
 void virementRecurrentHandler(void* pipefd);
 void minuterieHandler(void* pipefd);
-void quit();
+void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie);
 
 char* ADRESSE;
 int SERVER_PORT;
 int NUMERO_COMPTE;
 int DELAIS;
-pid_t PIDMINUTERIE;
-pid_t PIDVIREMENTRECCURENT;
 
 
 int main(int argc, char *arg[]) {
@@ -28,12 +28,12 @@ int main(int argc, char *arg[]) {
 
     int pipefd[2];
     spipe(pipefd);
-    PIDVIREMENTRECCURENT = fork_and_run1(virementRecurrentHandler, pipefd);
+    pid_t PIDVirementReccurent = fork_and_run1(virementRecurrentHandler, pipefd);
     sclose(pipefd[0]);
 
-    PIDMINUTERIE = fork_and_run1(minuterieHandler, pipefd);
+    pid_t PIDMinuterie = fork_and_run1(minuterieHandler, pipefd);
 
-    int numeroCompte = 1;
+    int numeroCompteDestinataire = 1;
     while(true){
         char val[MAXCHAR];
         int ret = sread(0, val, sizeof(val));
@@ -41,17 +41,26 @@ int main(int argc, char *arg[]) {
 
         char prefix = val[0];
 
+        ResponseClient virement;
+        virement.montant = 0;
+        virement.noCompteSource = NUMERO_COMPTE;
+        virement.noCompteDestination = numeroCompteDestinataire;
+
+        Transfer transfert;
+        transfert.type = VIREMENT;
+        transfert.response = virement;
+
         if(prefix == 'q') {
             //quit and free ressources
-            quit();
+            quit(PIDVirementReccurent, PIDMinuterie);
         }else if(prefix == '+'){
             //virement
             printf("%s\n", "virement");
         }else if(prefix == '*'){
             //virement récurrent
             printf("%s\n", "virement récurent");
-            swrite(pipefd[1], &numeroCompte, sizeof(int));
-            numeroCompte++;
+            swrite(pipefd[1], &transfert, sizeof(Transfer));
+            numeroCompteDestinataire++;
 
         }
     }
@@ -61,21 +70,24 @@ int main(int argc, char *arg[]) {
 void virementRecurrentHandler(void* pipefd){
     int *pipe = pipefd;
     sclose(pipe[1]);
-    int val;
-
-    int tabCompte[MAXVIREMENTRECURRENT];
+    //int val;
+    Transfer buffer;
+    ResponseClient tabCompte[MAXVIREMENTRECURRENT];
     int index = 0;
 
     while(true){
-        sread(pipe[0], &val, sizeof(int));
-        if(val != HEARTBEAT){
-            tabCompte[index] = val;
+        
+        sread(pipe[0], &buffer, sizeof(Transfer));
+        //sread(pipe[0], &val, sizeof(int));
+        
+        if(buffer.type != HEARTBEAT){
+            tabCompte[index] = buffer.response;
             index++;
-            printf("%s %i\n", "compte ajouté : ", tabCompte[index-1]);
+            printf("%s %i\n", "compte ajouté : ", tabCompte[index-1].noCompteDestination);
         } else {
             for (size_t i = 0; i < index; i++){
                 //virement
-                printf("%i\n", tabCompte[i]);
+                printf("%i\n", tabCompte[i].noCompteDestination);
             }
         }
     }
@@ -84,16 +96,17 @@ void virementRecurrentHandler(void* pipefd){
 void minuterieHandler(void* pipefd){
     int *pipe = pipefd;
     int delaisMinuterie = DELAIS;
-    int val = HEARTBEAT;
+    ResponseClient temp = {0, 0, 0};
+    Transfer heartbeat = {HEARTBEAT, temp};
     while(true){
         sleep(delaisMinuterie);
-        swrite(pipe[1], &val, sizeof(int));
+        swrite(pipe[1], &heartbeat, sizeof(Transfer));
     }
 }
 
-void quit(){
+void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie){
     printf("%s\n","fin du client");
-    skill(PIDMINUTERIE, SIGKILL);
-    skill(PIDVIREMENTRECCURENT, SIGKILL);
+    skill(PIDMinuterie, SIGKILL);
+    skill(PIDVirementReccurent, SIGKILL);
     exit(0);
 }
