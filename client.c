@@ -9,7 +9,7 @@
 #define HEARTBEAT 7777
 
 void virementRecurrentHandler(void* pipefd);
-void minuterieHandler(void* pipefd, void* delais);
+void minuterieHandler(void* pipefd);
 void quit();
 
 char* ADRESSE;
@@ -31,8 +31,8 @@ int main(int argc, char *arg[]) {
     PIDVIREMENTRECCURENT = fork_and_run1(virementRecurrentHandler, pipefd);
     sclose(pipefd[0]);
 
-    void *pointerDelais = &DELAIS;
-    PIDMINUTERIE = fork_and_run2(minuterieHandler, pointerDelais, pipefd);
+    PIDMINUTERIE = fork_and_run1(minuterieHandler, pipefd);
+
     int numeroCompte = 1;
     while(true){
         char val[MAXCHAR];
@@ -72,20 +72,18 @@ void virementRecurrentHandler(void* pipefd){
             tabCompte[index] = val;
             index++;
             printf("%s %i\n", "compte ajouté : ", tabCompte[index-1]);
-            printf("%s", "test");
         } else {
             for (size_t i = 0; i < index; i++){
                 //virement
-                printf("%i", tabCompte[i]);
-                printf("%s", "test");
+                printf("%i\n", tabCompte[i]);
             }
         }
     }
 }
 
-void minuterieHandler(void* pipefd, void* delais){
+void minuterieHandler(void* pipefd){
     int *pipe = pipefd;
-    int delaisMinuterie = *((int *) delais);
+    int delaisMinuterie = DELAIS;
     int val = HEARTBEAT;
     while(true){
         sleep(delaisMinuterie);
