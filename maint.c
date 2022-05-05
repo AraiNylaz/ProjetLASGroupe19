@@ -18,21 +18,21 @@ int main (int agrc , char* argv){
     int sem_id;
     switch(type)
     {
-    case type == 1:
+    case  1:
     //crée la mémoire partagée
         printf("type=1");
         shm_id = sshmget(SHMKEY, NBRCOMPTESENBANQUE*sizeof(int), IPC_CREAT | PERM);
         sem_id = sem_create(SEMKEY,1,PERM,1);
         printf("%d et %d ont bien été crées",shm_id,sem_id);
         break;
-    case type == 2:
+    case  2:
     //détruit la mémoire partagée
         printf("type=2");
         sshmdelete(shm_id);
         sem_delete(sem_id);
         printf("%d et %d ont bien été détruites",shm_id,sem_id);
         break;
-    case type == 3:
+    case  3:
     //réserve la mémoire partagée
         printf("type=3");
         sem_down0(sem_id);
