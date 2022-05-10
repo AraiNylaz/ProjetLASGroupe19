@@ -20,10 +20,9 @@ int main (int argc , char *argv[]){
     {
     case  1:
     //crée la mémoire partagée
-        sshmget(SHMKEY, NBRCOMPTESENBANQUE*sizeof(int), IPC_CREAT | PERM);
+        sshmget(SHMKEY, NBRCOMPTESENBANQUE*sizeof(CompteEnBanque), IPC_CREAT | PERM);
         sem_create(SEMKEY,1,PERM,1);
         printf("la mémoire partagée et les sémaphores ont bien été crées \n");
-        
         break;
     case  2:
     //détruit la mémoire partagée

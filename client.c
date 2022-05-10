@@ -133,7 +133,7 @@ void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie){
     printf("%s\n","fin du client");
     skill(PIDMinuterie, SIGKILL);
     skill(PIDVirementReccurent, SIGKILL);
-    exit(0);
+    _exit(0);
 }
 
 void envoyerVirement(ResponseClient virement){

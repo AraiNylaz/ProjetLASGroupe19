@@ -59,53 +59,66 @@ int main(int argc, char **argv){
         numeroCompteSource = responseClient.noCompteSource;
         montantResponse = responseClient.montant;
         numeroCompteDestination = responseClient.noCompteDestination;
+        printf("response %i + %i + %i\n", responseClient.noCompteDestination, responseClient.noCompteSource, responseClient.montant);
 
         // allocation des 1000 comptes de la banque     
         if((tabCompte = (CompteEnBanque*)malloc((sizeof(CompteEnBanque) * NBRCOMPTESENBANQUE))) == NULL){
            perror("erreur Malloc tableau de comptes");
            _exit(3);
         }
-        
-        sread(newsockfd, tabCompte, sizeof(ResponseClient));
+              
+        //sread(newsockfd, tabCompte, sizeof(ResponseClient));
         
         //get semaphores et sharedmemory + attach
-        shm_id = sshmget(SHMKEY, sizeof(ResponseClient), 0);
-        sem_id = sem_get(SEMKEY, 2);
-        sshmat(shm_id);
+        shm_id = sshmget(SHMKEY, NBRCOMPTESENBANQUE*sizeof(CompteEnBanque), 0);
+        sem_id = sem_get(SEMKEY, 1);
+        tabCompte = sshmat(shm_id);
 
-        for (int i = 0; i < NBRCOMPTESENBANQUE; i++)
-        {
+
+        for (int i = 0; i < 10; i++)
+            {
+                printf("malloc1 == %i + %i\n", tabCompte[i].noCompte, tabCompte[i].solde);
+            }   
+            
+        //for (int i = 0; i < NBRCOMPTESENBANQUE; i++)
+        //{
             // si id du compte pas ok
             if(numeroCompteSource < 0 || numeroCompteSource > 1000) {
                 char* messageErreur = "numero de compte invalide... reessayez";
                 printf("%s\n", messageErreur);
                 //envoi au client
-                swrite(FD_1, messageErreur, sizeof(messageErreur));
+                swrite(newsockfd, messageErreur, sizeof(messageErreur));
                 continue;
             }
             //prends la main
             sem_down0(sem_id);
             //si solde insiffisant
-            if(tabCompte[responseClient.noCompteDestination].solde - montantResponse < 0){
+            if(tabCompte[responseClient.noCompteSource].solde - montantResponse < 0){
                 char* messageErreur = "Solde insuffisant sur le compte";
                 printf("%s\n", messageErreur);
                 //envoi au client
-                swrite(FD_1, messageErreur, sizeof(messageErreur));
+                swrite(newsockfd, messageErreur, sizeof(messageErreur));
                 continue;
             }
             printf("virement de %i € vers le compte %i de la part du compte %i.\n", montantResponse, numeroCompteDestination, numeroCompteSource);
             //else modifications des montants
             tabCompte[numeroCompteSource].solde += montantResponse;
             tabCompte[numeroCompteDestination].solde -= montantResponse;
+
             printf("balance du compte source : %i\n", tabCompte[numeroCompteSource].solde);
             printf("balance du compte destination : %i\n", tabCompte[numeroCompteDestination].solde);
             char* responseServer = "ok";
             //envoi au client
-            swrite(FD_1, responseServer, sizeof(responseServer));
+            swrite(newsockfd, responseServer, sizeof(responseServer));
+            for (int i = 0; i < 10; i++)
+            {
+                printf("malloc2 == %i + %i\n", tabCompte[i].noCompte, tabCompte[i].solde);
+            }   
+            
             //redonne la main
             sem_up0(sem_id);
 
-        }
+        //}
             
     }
 

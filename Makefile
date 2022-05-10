@@ -6,6 +6,8 @@ CCFLAGS= -D_DEFAULT_SOURCE -D_XOPEN_SOURCE -D_BSD_SOURCE -std=c11 -pedantic -Wvl
 
 ALL=  pdr server client maint
 
+all: $(ALL)
+
 pdr: pdr.o utils_v1.o
 	cc $(CFLAGS) -o pdr pdr.o utils_v1.o
 
