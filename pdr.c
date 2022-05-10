@@ -5,6 +5,10 @@
 #include "utils_v1.h"
 
 int main(int argc, char *argv[]){
+    if(argc != 3) {
+        printf("usage : ./pdr [no compte destination] [montant]\n");
+        _exit(2);
+    }
     int numCompte = atoi(argv[1]);
     int montant= atoi(argv[2]);
     int sem_id=sem_get(SEMKEY,1);

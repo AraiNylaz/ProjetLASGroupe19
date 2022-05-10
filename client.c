@@ -22,6 +22,10 @@ int DELAIS;
 
 
 int main(int argc, char *arg[]) {
+    if(argc != 5) {
+        printf("usage : ./client [IP address] [port] [no compte destination] [delais]\n");
+        _exit(2);
+    }
     ADRESSE = arg[1];
     SERVER_PORT = atoi(arg[2]);
     NUMERO_COMPTE = atoi(arg[3]);
@@ -107,7 +111,7 @@ void virementRecurrentHandler(void* pipefd){
         if(buffer.type != HEARTBEAT){
             tabCompte[index] = buffer.response;
             index++;
-            printf("%s %i\n", "compte ajouté : ", tabCompte[index-1].noCompteDestination);
+            printf("%s-%i\n", "compte ajouté : ", tabCompte[index-1].noCompteDestination);
         } else {
             for (size_t i = 0; i < index; i++){
                 printf("%i\n", tabCompte[i].noCompteDestination);

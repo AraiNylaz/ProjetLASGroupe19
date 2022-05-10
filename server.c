@@ -54,7 +54,8 @@ int main(int argc, char **argv){
 
         //accepte une instance de client
         int newsockfd = saccept(sockfd);
-        //va cherer les valeurs envoyee par le client
+        //va chercher les valeurs envoyees par le client
+        printf("nouvelle connexion client\n");
         sread(newsockfd, &responseClient, sizeof(responseClient));
         numeroCompteSource = responseClient.noCompteSource;
         montantResponse = responseClient.montant;
@@ -63,10 +64,10 @@ int main(int argc, char **argv){
 
         // allocation des 1000 comptes de la banque     
         if((tabCompte = (CompteEnBanque*)malloc((sizeof(CompteEnBanque) * NBRCOMPTESENBANQUE))) == NULL){
-           perror("erreur Malloc tableau de comptes");
-           _exit(3);
+            perror("erreur Malloc tableau de comptes");
+            _exit(3);
         }
-              
+
         //sread(newsockfd, tabCompte, sizeof(ResponseClient));
         
         //get semaphores et sharedmemory + attach
@@ -75,7 +76,7 @@ int main(int argc, char **argv){
         tabCompte = sshmat(shm_id);
 
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 3; i++)
             {
                 printf("malloc1 == %i + %i\n", tabCompte[i].noCompte, tabCompte[i].solde);
             }   
@@ -84,20 +85,20 @@ int main(int argc, char **argv){
         //{
             // si id du compte pas ok
             if(numeroCompteSource < 0 || numeroCompteSource > 1000) {
-                char* messageErreur = "numero de compte invalide... reessayez";
-                printf("%s\n", messageErreur);
+                char* messageErreur1 = "numero de compte invalide... reessayez";
+                printf("%s\n", messageErreur1);
                 //envoi au client
-                swrite(newsockfd, messageErreur, sizeof(messageErreur));
+                swrite(newsockfd, messageErreur1, sizeof(messageErreur1));
                 continue;
             }
             //prends la main
             sem_down0(sem_id);
             //si solde insiffisant
             if(tabCompte[responseClient.noCompteSource].solde - montantResponse < 0){
-                char* messageErreur = "Solde insuffisant sur le compte";
-                printf("%s\n", messageErreur);
+                char* messageErreur2 = "Solde insuffisant sur le compte";
+                printf("%s\n", messageErreur2);
                 //envoi au client
-                swrite(newsockfd, messageErreur, sizeof(messageErreur));
+                swrite(newsockfd, messageErreur2, sizeof(messageErreur2));
                 continue;
             }
             printf("virement de %i € vers le compte %i de la part du compte %i.\n", montantResponse, numeroCompteDestination, numeroCompteSource);
@@ -110,14 +111,14 @@ int main(int argc, char **argv){
             char* responseServer = "ok";
             //envoi au client
             swrite(newsockfd, responseServer, sizeof(responseServer));
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 3; i++)
             {
                 printf("malloc2 == %i + %i\n", tabCompte[i].noCompte, tabCompte[i].solde);
             }   
             
             //redonne la main
             sem_up0(sem_id);
-
+            printf("fin de conexion client\n");
         //}
             
     }

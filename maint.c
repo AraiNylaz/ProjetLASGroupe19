@@ -8,11 +8,12 @@
 #include "config.h"
 #include "utils_v1.h"
 
-#define PERM 0666
-
-
 
 int main (int argc , char *argv[]){
+    if(argc != 2) {
+        printf("usage : ./maint [option]\n");
+        _exit(2);
+    }
     int type= atoi(argv[1]) ;
     int shm_id;
     int sem_id;
@@ -27,7 +28,6 @@ int main (int argc , char *argv[]){
     case  2:
     //détruit la mémoire partagée
         shm_id = sshmget(SHMKEY, NBRCOMPTESENBANQUE*sizeof(int), 0 | PERM);
-        
         sem_id = sem_get(SEMKEY, 1);
         sshmdelete(shm_id);
         //sem_id=sem_get()
