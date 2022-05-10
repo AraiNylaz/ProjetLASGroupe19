@@ -13,6 +13,7 @@
 void virementRecurrentHandler(void* pipefd);
 void minuterieHandler(void* pipefd);
 void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie);
+void envoyerVirement(ResponseClient response);
 
 char* ADRESSE;
 int SERVER_PORT;
@@ -36,15 +37,37 @@ int main(int argc, char *arg[]) {
     int numeroCompteDestinataire = 1;
     while(true){
         char val[MAXCHAR];
-        int ret = sread(0, val, sizeof(val));
+        int ret = sread(0, val, MAXCHAR);
         val[ret-1] = '\0';
 
         char prefix = val[0];
 
+        
+        char compte[4];
+        char montant[MAXCHAR];
+        int indexVal = 2;
+        int indexCompte = 0;
+        int indexMontant = 0;
+
+        while(val[indexVal] != ' '){
+            compte[indexCompte] = val[indexVal];
+            indexVal++;
+            indexCompte++;
+        }
+        compte[indexCompte] = '\0';
+        indexVal++;
+
+        while(val[indexVal] != '\0'){
+            montant[indexMontant] = val[indexVal];
+            indexVal++;
+            indexMontant++;
+        }
+        montant[indexMontant] = '\0';
+        
         ResponseClient virement;
-        virement.montant = 0;
+        virement.montant = atoi(montant);
         virement.noCompteSource = NUMERO_COMPTE;
-        virement.noCompteDestination = numeroCompteDestinataire;
+        virement.noCompteDestination = atoi(compte);
 
         Transfer transfert;
         transfert.type = VIREMENT;
@@ -56,6 +79,7 @@ int main(int argc, char *arg[]) {
         }else if(prefix == '+'){
             //virement
             printf("%s\n", "virement");
+            envoyerVirement(virement);
         }else if(prefix == '*'){
             //virement récurrent
             printf("%s\n", "virement récurent");
@@ -86,8 +110,9 @@ void virementRecurrentHandler(void* pipefd){
             printf("%s %i\n", "compte ajouté : ", tabCompte[index-1].noCompteDestination);
         } else {
             for (size_t i = 0; i < index; i++){
-                //virement
                 printf("%i\n", tabCompte[i].noCompteDestination);
+                //virement
+                envoyerVirement(tabCompte[i]);
             }
         }
     }
@@ -109,4 +134,18 @@ void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie){
     skill(PIDMinuterie, SIGKILL);
     skill(PIDVirementReccurent, SIGKILL);
     exit(0);
+}
+
+void envoyerVirement(ResponseClient virement){
+    int sockfd = ssocket();
+    sconnect(ADRESSE, SERVER_PORT, sockfd);
+    ResponseClient data = virement;
+    swrite(sockfd, &data, sizeof(ResponseClient));
+
+    char response[90];
+    sread(sockfd, &response, 90);
+    if(!(response[2] == '\0' && response[0] == 'o' && response[1]=='k')){
+        printf("%s\n", response);
+    }
+
 }
