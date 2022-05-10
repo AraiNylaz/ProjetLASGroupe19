@@ -2,7 +2,7 @@
 #Makefile groupe 19
 
 CC= gcc
-CCFLAGS= -D_DEFAULT_SOURCE -D_XOPEN_SOURCE -D_BSD_SOURCE -std=c11 -pedantic -Wvla -Wall -Werror
+CCFLAGS= -D_DEFAULT_SOURCE -D_XOPEN_SOURCE -D_BSD_SOURCE -std=c11 -pedantic -Wvla -Wall -Werror -Wno-unused-variable
 
 ALL=  pdr server client maint
 
@@ -37,3 +37,4 @@ clean :
 	rm -rf *.o
 	rm -rf $(ALL)
 	ipcrm -a
+

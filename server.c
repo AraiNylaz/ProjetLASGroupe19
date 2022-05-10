@@ -6,7 +6,7 @@ char ctrlC[100];
 
 void ctrlCHandler(int sig){
 
-    printf("ctrl C sur le serveur --> arret en cours...");
+    printf("CTRL+C sur le serveur :: arret en cours...");
     swrite(FD_0, ctrlC, sizeof(ctrlC));
 
 }
@@ -41,12 +41,12 @@ int main(int argc, char **argv){
     ssigprocmask(SIG_UNBLOCK, &set, NULL);
 
     int sem_id, shm_id;
-    int montantArgument;
+
     struct ResponseClient responseClient;
+    int montantResponse;
     int numeroCompteSource;
     int numeroCompteDestination;
-    struct CompteEnBanque compte[NBRCOMPTESENBANQUE]; 
-    struct CompteEnBanque *compteTemp; //tableau de comptes
+    struct CompteEnBanque *tabCompte; //tableau de comptes
     //TODO faire en sorte que tous les comptes soient enregistrés en memoire...
 
     //tant que ! ctrlC --> run
@@ -54,19 +54,19 @@ int main(int argc, char **argv){
 
         //accepte une instance de client
         int newsockfd = saccept(sockfd);
-        //va cherhcer les valeurs envoyee par le client
-        ssize_t returnValue = sread(newsockfd, &responseClient, sizeof(responseClient));
+        //va cherer les valeurs envoyee par le client
+        sread(newsockfd, &responseClient, sizeof(responseClient));
         numeroCompteSource = responseClient.noCompteSource;
-        montantArgument = responseClient.montant;
+        montantResponse = responseClient.montant;
         numeroCompteDestination = responseClient.noCompteDestination;
 
-        // allocation des 1000 comptes de la banque
-        if((compteTemp = (CompteEnBanque*)malloc((sizeof(CompteEnBanque) * NBRCOMPTESENBANQUE))) == NULL){ //TODO
-           perror("erreur Malloc tableau CompteEnBanque");
+        // allocation des 1000 comptes de la banque     
+        if((tabCompte = (CompteEnBanque*)malloc((sizeof(CompteEnBanque) * NBRCOMPTESENBANQUE))) == NULL){
+           perror("erreur Malloc tableau de comptes");
            _exit(3);
         }
         
-        returnValue = sread(newsockfd, compteTemp, sizeof(ResponseClient));
+        sread(newsockfd, tabCompte, sizeof(ResponseClient));
         
         //get semaphores et sharedmemory + attach
         shm_id = sshmget(SHMKEY, sizeof(ResponseClient), 0);
@@ -75,22 +75,33 @@ int main(int argc, char **argv){
 
         for (int i = 0; i < NBRCOMPTESENBANQUE; i++)
         {
-            //compte = banque[i]; TODO localiser 1 compte dans le tableau de comptes
             // si id du compte pas ok
             if(numeroCompteSource < 0 || numeroCompteSource > 1000) {
-                printf("numero de compte invalide... réessayez\n");
+                char* messageErreur = "numero de compte invalide... reessayez";
+                printf("%s\n", messageErreur);
+                //envoi au client
+                swrite(FD_1, messageErreur, sizeof(messageErreur));
                 continue;
             }
             //prends la main
             sem_down0(sem_id);
             //si solde insiffisant
-            if(compte[responseClient.noCompteDestination].solde - montantArgument < 0){
-                printf("Solde insuffisant sur le compte\n");
+            if(tabCompte[responseClient.noCompteDestination].solde - montantResponse < 0){
+                char* messageErreur = "Solde insuffisant sur le compte";
+                printf("%s\n", messageErreur);
+                //envoi au client
+                swrite(FD_1, messageErreur, sizeof(messageErreur));
                 continue;
             }
+            printf("virement de %i € vers le compte %i de la part du compte %i.\n", montantResponse, numeroCompteDestination, numeroCompteSource);
             //else modifications des montants
-            compte[numeroCompteSource].solde += montantArgument;
-            compte[numeroCompteDestination].solde -= montantArgument;
+            tabCompte[numeroCompteSource].solde += montantResponse;
+            tabCompte[numeroCompteDestination].solde -= montantResponse;
+            printf("balance du compte source : %i\n", tabCompte[numeroCompteSource].solde);
+            printf("balance du compte destination : %i\n", tabCompte[numeroCompteDestination].solde);
+            char* responseServer = "ok";
+            //envoi au client
+            swrite(FD_1, responseServer, sizeof(responseServer));
             //redonne la main
             sem_up0(sem_id);
 
