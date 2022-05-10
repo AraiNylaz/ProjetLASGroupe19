@@ -14,7 +14,6 @@ int main(int argc, char *argv[]){
     if (montant < 0){
         //montant négatif => retrait 
         (*livreDeCompte).comptes[numCompte]-=montant;
-        //nread(1,livreDeCompte.comptes[numCompte-1],sizeof(int));
     }else{
         //montant positif => ajout
         (*livreDeCompte).comptes[numCompte]+=montant;
