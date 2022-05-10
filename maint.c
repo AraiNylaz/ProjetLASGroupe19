@@ -20,29 +20,34 @@ int main (int argc , char *argv[]){
     {
     case  1:
     //crée la mémoire partagée
-        printf("type=1");
-        shm_id = sshmget(SHMKEY, NBRCOMPTESENBANQUE*sizeof(int), IPC_CREAT | PERM);
-        sem_id = sem_create(SEMKEY,1,PERM,1);
-        printf("%d et %d ont bien été crées \n",shm_id,sem_id);
+        sshmget(SHMKEY, NBRCOMPTESENBANQUE*sizeof(int), IPC_CREAT | PERM);
+        sem_create(SEMKEY,1,PERM,1);
+        printf("la mémoire partagée et les sémaphores ont bien été crées \n");
+        
         break;
     case  2:
     //détruit la mémoire partagée
-        printf("type=2");
+        shm_id = sshmget(SHMKEY, NBRCOMPTESENBANQUE*sizeof(int), 0 | PERM);
+        
+        sem_id = sem_get(SEMKEY, 1);
         sshmdelete(shm_id);
+        //sem_id=sem_get()
         sem_delete(sem_id);
-        printf("%d et %d ont bien été détruites",shm_id,sem_id);
+        printf("la mémoire partagée et les sémaphores  ont bien été détruites \n ");
         break;
     case  3:
     //réserve la mémoire partagée
-        printf("type=3");
+        sem_id = sem_get(SEMKEY,1);
+        shm_id = sshmget(SHMKEY,NBRCOMPTESENBANQUE*sizeof(int),0|PERM);
+        int* z =sshmat(shm_id);
         sem_down0(sem_id);
         sleep(atoi(argv[2]));
         sem_up0(sem_id);
+        sshmdt(z);
         break;
     default:
         printf("type non valide \n");
         break;
-       
     }
 }
 
