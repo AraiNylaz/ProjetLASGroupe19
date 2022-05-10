@@ -16,9 +16,9 @@
 #define SERVER_IP		"127.0.0.1"  /* localhost */
 #define NBRCOMPTESENBANQUE 1000
 #define BACKLOG 10
-#define FD_0 0
-#define FD_1 1
-#define FD_ERROR 2
+#define FD_0 0 //read
+#define FD_1 1 //write
+#define FD_ERROR 2 //error
 #define PERM 0666
 #define SHMKEY 1234
 #define SEMKEY 1234
@@ -39,6 +39,7 @@ typedef struct CompteEnBanque{
 int noCompte;
 int solde;
 }CompteEnBanque;
+
 struct Banque{
  int comptes[NBRCOMPTESENBANQUE];
 } Banque;
