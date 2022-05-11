@@ -31,7 +31,6 @@ int main(int argc, char *argv[]){
     //printf("passe ici ! %i\n", montant);
     livreDeCompte[numCompte - 1].solde  += montant;
     sem_up0(sem_id);
-
     sshmdt(livreDeCompte);
 
 }
