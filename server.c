@@ -47,7 +47,7 @@ int main(int argc, char **argv){
     int numeroCompteSource;
     int numeroCompteDestination;
     struct CompteEnBanque *tabCompte; //tableau de comptes
-    struct ResponseServer structResponseServer;
+    struct ResponseServer responseServer;
 
     //tant que ! ctrlC --> run
     while (true) {
@@ -85,9 +85,9 @@ int main(int argc, char **argv){
         //{
             // si id du compte pas ok
             if(numeroCompteSource < 0 || numeroCompteSource > 1000) {
-                structResponseServer.solde = 0;
-                structResponseServer.code = NOCOMPTEINVALIDE;
-                swrite(newsockfd, structResponseServer, sizeof(structResponseServer));
+                responseServer.solde = 0;
+                responseServer.code = NOCOMPTEINVALIDE;
+                swrite(newsockfd, &responseServer, sizeof(responseServer));
                 continue;
             }
             //prends la main
@@ -95,9 +95,9 @@ int main(int argc, char **argv){
             //si solde insiffisant
             printf("solde compte --> %i\n", tabCompte[responseClient.noCompteSource].solde);
             if(tabCompte[numeroCompteSource].solde - montantResponse < 0){
-                structResponseServer.solde = 0;
-                structResponseServer.code = SOLDEINSUFFISANT;
-                swrite(newsockfd, structResponseServer, sizeof(structResponseServer));
+                responseServer.solde = 0;
+                responseServer.code = SOLDEINSUFFISANT;
+                swrite(newsockfd, &responseServer, sizeof(responseServer));
                 continue;
             }
             printf("virement de %i € vers le compte %i de la part du compte %i.\n", montantResponse, numeroCompteDestination, numeroCompteSource);
@@ -108,11 +108,11 @@ int main(int argc, char **argv){
             printf("balance du compte source : %i\n", tabCompte[numeroCompteSource].solde);
             printf("balance du compte destination : %i\n", tabCompte[numeroCompteDestination].solde);
             
-            structResponseServer.solde = montantResponse;
-            structResponseServer.code = CODEOK;
-
+            responseServer.solde = tabCompte[numeroCompteSource].solde;
+            responseServer.code = CODEOK;
             //envoi au client
-            swrite(newsockfd, structResponseServer, sizeof(structResponseServer));
+            swrite(newsockfd, &responseServer, sizeof(responseServer));
+
             for (int i = 0; i < 3; i++)
             {
                 printf("malloc2 == %i + %i\n", tabCompte[i].noCompte, tabCompte[i].solde);

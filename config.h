@@ -22,8 +22,8 @@
 #define FD_0 0
 #define NOCOMPTEINVALIDE 1
 #define SOLDEINSUFFISANT 2
-#define STRINGCOMPTEINVALIDE "compte invalide"
-#define STRINGSOLDEINSUFFISANT "solde suffisant"
+#define STRINGCOMPTEINVALIDE "compte invalide\n"
+#define STRINGSOLDEINSUFFISANT "solde insuffisant\n"
 #define PERM 0666
 #define SHMKEY 1234
 #define SEMKEY 1234

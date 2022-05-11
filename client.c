@@ -82,11 +82,9 @@ int main(int argc, char *arg[]) {
             quit(PIDVirementReccurent, PIDMinuterie);
         }else if(prefix == '+'){
             //virement
-            printf("%s\n", "virement");
             envoyerVirement(virement);
         }else if(prefix == '*'){
             //virement récurrent
-            printf("%s\n", "virement récurent");
             swrite(pipefd[1], &transfert, sizeof(Transfer));
             numeroCompteDestinataire++;
 
@@ -153,7 +151,11 @@ void envoyerVirement(ResponseClient virement){
     } else if(response.code == SOLDEINSUFFISANT) {
         printf(STRINGSOLDEINSUFFISANT);
     } else if (response.code == CODEOK) {
-        printf("montant restant sur votre compte : %i", response.solde);
+        printf("montant restant sur votre compte : %i\n", response.solde);
     }
+    sclose(sockfd);
 
+
+//TODO close client après 1 (une) action
+//virement recurent pour chaque virement open et close la connection
 }
