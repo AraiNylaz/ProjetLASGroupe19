@@ -18,9 +18,12 @@
 
 #define NBRCOMPTESENBANQUE 1000
 #define BACKLOG 10
-#define FD_0 0 //read
-#define FD_1 1 //write
-#define FD_ERROR 2 //error
+#define CODEOK 0
+#define FD_0 0
+#define NOCOMPTEINVALIDE 1
+#define SOLDEINSUFFISANT 2
+#define STRINGCOMPTEINVALIDE "compte invalide"
+#define STRINGSOLDEINSUFFISANT "solde suffisant"
 #define PERM 0666
 #define SHMKEY 1234
 #define SEMKEY 1234
@@ -46,6 +49,11 @@ typedef struct Transfer {
     int type;
     ResponseClient response;
 } Transfer;
+
+typedef struct ResponseServer{
+  int code;
+  int solde;
+} ResponseServer;
 
 #endif
 
