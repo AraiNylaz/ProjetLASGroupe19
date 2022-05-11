@@ -4,6 +4,8 @@
 #include "config.h"
 #include "utils_v1.h"
 
+#define LIMITE -1500
+
 int main(int argc, char *argv[]){
     if(argc != 3) {
         printf("usage : ./pdr [no compte destination] [montant]\n");
@@ -25,7 +27,7 @@ int main(int argc, char *argv[]){
         printf("livreComte %i :: %i\n", i, livreDeCompte[i].solde);
         printf("no compte %i :: %i\n", i, livreDeCompte[i].noCompte);
     }
-    if (solde < -1500){
+    if (livreDeCompte[numCompte - 1].solde < LIMITE){
          sem_down0(sem_id);
          //TODO ajouter une linite max
          //printf("passe ici ! %i\n", montant);
