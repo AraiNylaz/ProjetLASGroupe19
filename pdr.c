@@ -25,11 +25,15 @@ int main(int argc, char *argv[]){
         printf("livreComte %i :: %i\n", i, livreDeCompte[i].solde);
         printf("no compte %i :: %i\n", i, livreDeCompte[i].noCompte);
     }
-    sem_down0(sem_id);
-    //TODO ajouter une linite max
-    //printf("passe ici ! %i\n", montant);
-    livreDeCompte[numCompte - 1].solde  += montant;
-    sem_up0(sem_id);
+    if (solde < -1500){
+         sem_down0(sem_id);
+         //TODO ajouter une linite max
+         //printf("passe ici ! %i\n", montant);
+         livreDeCompte[numCompte - 1].solde  += montant;
+         sem_up0(sem_id);
+    }else{
+        printf("Solde insuffisant\n");
+    }
     printf("solde restants : %i\n", livreDeCompte[i].solde);
 
     sshmdt(livreDeCompte);
