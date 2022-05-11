@@ -111,7 +111,7 @@ void virementRecurrentHandler(void* pipefd){
         if(buffer.type != HEARTBEAT){
             tabCompte[index] = buffer.response;
             index++;
-            printf("%s-%i\n", "compte ajouté : ", tabCompte[index-1].noCompteDestination);
+            printf("%s %i\n", "compte ajouté : ", tabCompte[index-1].noCompteDestination);
         } else {
             for (size_t i = 0; i < index; i++){
                 printf("%i\n", tabCompte[i].noCompteDestination);
@@ -146,8 +146,14 @@ void envoyerVirement(ResponseClient virement){
     ResponseClient data = virement;
     swrite(sockfd, &data, sizeof(ResponseClient));
 
-    char response[90];
-    sread(sockfd, &response, 90);
-    if(strcmp(response,"ok") != 0) printf("%s\n", response);
+    ResponseServer response;
+    sread(sockfd, &response, sizeof(ResponseServer));
+    if(response.code == NOCOMPTEINVALIDE) {
+        printf(STRINGCOMPTEINVALIDE);
+    } else if(response.code == SOLDEINSUFFISANT) {
+        printf(STRINGSOLDEINSUFFISANT);
+    } else if (response.code == CODEOK) {
+        printf("montant restant sur votre compte : %i", response.solde);
+    }
 
 }

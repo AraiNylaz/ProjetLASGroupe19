@@ -47,7 +47,7 @@ int main(int argc, char **argv){
     int numeroCompteSource;
     int numeroCompteDestination;
     struct CompteEnBanque *tabCompte; //tableau de comptes
-    //TODO faire en sorte que tous les comptes soient enregistrés en memoire...
+    struct ResponseServer structResponseServer;
 
     //tant que ! ctrlC --> run
     while (true) {
@@ -85,10 +85,9 @@ int main(int argc, char **argv){
         //{
             // si id du compte pas ok
             if(numeroCompteSource < 0 || numeroCompteSource > 1000) {
-                char* messageErreur1 = "numero de compte invalide... reessayez";
-                printf("%s\n", messageErreur1);
-                //envoi au client
-                swrite(newsockfd, messageErreur1, sizeof(messageErreur1));
+                structResponseServer.solde = 0;
+                structResponseServer.code = NOCOMPTEINVALIDE;
+                swrite(newsockfd, structResponseServer, sizeof(structResponseServer));
                 continue;
             }
             //prends la main
@@ -96,10 +95,9 @@ int main(int argc, char **argv){
             //si solde insiffisant
             printf("solde compte --> %i\n", tabCompte[responseClient.noCompteSource].solde);
             if(tabCompte[numeroCompteSource].solde - montantResponse < 0){
-                char* messageErreur2 = "Solde insuffisant sur le compte";
-                printf("%s\n", messageErreur2);
-                //envoi au client
-                swrite(newsockfd, messageErreur2, sizeof(messageErreur2));
+                structResponseServer.solde = 0;
+                structResponseServer.code = SOLDEINSUFFISANT;
+                swrite(newsockfd, structResponseServer, sizeof(structResponseServer));
                 continue;
             }
             printf("virement de %i € vers le compte %i de la part du compte %i.\n", montantResponse, numeroCompteDestination, numeroCompteSource);
@@ -109,11 +107,12 @@ int main(int argc, char **argv){
 
             printf("balance du compte source : %i\n", tabCompte[numeroCompteSource].solde);
             printf("balance du compte destination : %i\n", tabCompte[numeroCompteDestination].solde);
-            char stringTemp[256] = montantResponse + '0';
-            char* responseServer = stringTemp;
-            printf("azertyuiop --> %s", responseServer);
+            
+            structResponseServer.solde = montantResponse;
+            structResponseServer.code = CODEOK;
+
             //envoi au client
-            swrite(newsockfd, responseServer, sizeof(responseServer));
+            swrite(newsockfd, structResponseServer, sizeof(structResponseServer));
             for (int i = 0; i < 3; i++)
             {
                 printf("malloc2 == %i + %i\n", tabCompte[i].noCompte, tabCompte[i].solde);
