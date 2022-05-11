@@ -47,5 +47,11 @@ typedef struct Transfer {
     ResponseClient response;
 } Transfer;
 
+typedef struct ResponseServer{
+  int code;
+  int solde;
+} ResponseServer;
+
+
 #endif
 

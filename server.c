@@ -109,7 +109,9 @@ int main(int argc, char **argv){
 
             printf("balance du compte source : %i\n", tabCompte[numeroCompteSource].solde);
             printf("balance du compte destination : %i\n", tabCompte[numeroCompteDestination].solde);
-            char* responseServer = "ok";
+            char stringTemp[256] = montantResponse + '0';
+            char* responseServer = stringTemp;
+            printf("azertyuiop --> %s", responseServer);
             //envoi au client
             swrite(newsockfd, responseServer, sizeof(responseServer));
             for (int i = 0; i < 3; i++)
