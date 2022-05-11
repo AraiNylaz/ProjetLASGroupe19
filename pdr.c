@@ -10,7 +10,6 @@ int main(int argc, char *argv[]){
         _exit(2);
     }
     int numCompte = atoi(argv[1]);
-    if(numCompte < 0 || numCompte >= 1000) _exit(3);
     int montant = atoi(argv[2]);
     int sem_id = sem_get(SEMKEY,1);
     int shm_id = sshmget(SHMKEY,NBRCOMPTESENBANQUE*sizeof(CompteEnBanque), 0 | PERM);
@@ -31,6 +30,8 @@ int main(int argc, char *argv[]){
     //printf("passe ici ! %i\n", montant);
     livreDeCompte[numCompte - 1].solde  += montant;
     sem_up0(sem_id);
+    printf("solde restants : %i\n", livreDeCompte[i].solde);
+
     sshmdt(livreDeCompte);
 
 }
