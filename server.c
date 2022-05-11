@@ -57,10 +57,10 @@ int main(int argc, char **argv){
         //va chercher les valeurs envoyees par le client
         printf("nouvelle connexion client\n");
         sread(newsockfd, &responseClient, sizeof(responseClient));
-        numeroCompteSource = responseClient.noCompteSource;
+        numeroCompteSource = responseClient.noCompteSource - 1;
         montantResponse = responseClient.montant;
-        numeroCompteDestination = responseClient.noCompteDestination;
-        printf("response %i + %i + %i\n", responseClient.noCompteDestination, responseClient.noCompteSource, responseClient.montant);
+        numeroCompteDestination = responseClient.noCompteDestination - 1;
+        printf("response %i + %i + %i\n", numeroCompteDestination, numeroCompteSource, montantResponse);
 
         // allocation des 1000 comptes de la banque     
         if((tabCompte = (CompteEnBanque*)malloc((sizeof(CompteEnBanque) * NBRCOMPTESENBANQUE))) == NULL){
@@ -94,7 +94,8 @@ int main(int argc, char **argv){
             //prends la main
             sem_down0(sem_id);
             //si solde insiffisant
-            if(tabCompte[responseClient.noCompteSource].solde - montantResponse < 0){
+            printf("solde compte --> %i\n", tabCompte[responseClient.noCompteSource].solde);
+            if(tabCompte[numeroCompteSource].solde - montantResponse < 0){
                 char* messageErreur2 = "Solde insuffisant sur le compte";
                 printf("%s\n", messageErreur2);
                 //envoi au client
@@ -103,8 +104,8 @@ int main(int argc, char **argv){
             }
             printf("virement de %i € vers le compte %i de la part du compte %i.\n", montantResponse, numeroCompteDestination, numeroCompteSource);
             //else modifications des montants
-            tabCompte[numeroCompteSource].solde += montantResponse;
-            tabCompte[numeroCompteDestination].solde -= montantResponse;
+            tabCompte[numeroCompteSource].solde -= montantResponse;
+            tabCompte[numeroCompteDestination].solde += montantResponse;
 
             printf("balance du compte source : %i\n", tabCompte[numeroCompteSource].solde);
             printf("balance du compte destination : %i\n", tabCompte[numeroCompteDestination].solde);
@@ -115,10 +116,10 @@ int main(int argc, char **argv){
             {
                 printf("malloc2 == %i + %i\n", tabCompte[i].noCompte, tabCompte[i].solde);
             }   
-            
+            //printf("fin action de client\n");
             //redonne la main
             sem_up0(sem_id);
-            printf("fin de conexion client\n");
+            
         //}
             
     }

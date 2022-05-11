@@ -148,8 +148,6 @@ void envoyerVirement(ResponseClient virement){
 
     char response[90];
     sread(sockfd, &response, 90);
-    if(!(response[2] == '\0' && response[0] == 'o' && response[1]=='k')){
-        printf("%s\n", response);
-    }
+    if(strcmp(response,"ok") != 0) printf("%s\n", response);
 
 }
