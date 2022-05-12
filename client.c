@@ -11,9 +11,34 @@
 #define HEARTBEAT -1
 #define VIREMENT 0
 
+/*
+PRE : pipefd != NULL
+POST : crée le handle des virements récurents
+ce dernier envoye une série de virement inscrit au
+préalable au serveur à chaque fois qu'il read
+un heartbeat 
+*/ : 
 void virementRecurrentHandler(void* pipefd);
+
+/*
+PRE : pipefd != NULL
+POST : write un heartbeat dans un pipe
+tout les x temps en fonction du DELAIS
+*/ 
 void minuterieHandler(void* pipefd);
+
+
+/*
+POST : tue les programmes enfants conrespondant aux 2 pids
+fournis et exit le programme avec un code 0
+*/ 
 void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie);
+
+/*
+PRE : response != NULL
+POST : envoye une structure ResponseClient au serveur et 
+printf si print est à true ou non si print est à false
+*/ 
 void envoyerVirement(ResponseClient response, bool print);
 
 char* adresse;
