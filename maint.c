@@ -5,9 +5,8 @@
 /**
  * @brief permet de créer, detruire ou réserver la memoire partagee et semaphore 
  * 
- * @param argc 
- * @param argv 
- * @return int 
+ * @param argc prend 1 argument
+ * @param argv l'option possible : 1, 2 ou 3 
  */
 int main (int argc , char *argv[]){
     if(argc != 2) {

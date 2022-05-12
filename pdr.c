@@ -5,11 +5,10 @@
 #define LIMITE -1500
 
 /**
- * @brief 
+ * @brief programme permettant de simuler des depots et retraits
  * 
- * @param argc 
- * @param argv 
- * @return int 
+ * @param argc prend 2 arguments
+ * @param argv le compte de destination et le montant à deposer ou retirer
  */
 int main(int argc, char *argv[]){ 
     if(argc != 3) {

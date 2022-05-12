@@ -5,9 +5,9 @@
 char ctrlC[10];
 
 /**
- * @brief 
+ * @brief handler en cas d'interruption utilisateur (CTRL + C)
  * 
- * @param sig 
+ * @param sig signal intercepte
  */
 void ctrlCHandler(int sig){
 
@@ -17,10 +17,12 @@ void ctrlCHandler(int sig){
 }
 
 /**
- * @brief 
+ * @brief  initialise le socket de connection, 
+ *  le lie au port donne en parametre 
+ *  et ecoute en attende de connexions
  * 
- * @param port 
- * @return int 
+ * @param port  : port sur lequel tournera le serveur
+ * @return int  : le sockfd
  */
 int initSocketServer(int port){
 
@@ -32,11 +34,10 @@ int initSocketServer(int port){
 }
 
 /**
- * @brief 
+ * @brief programme principal du serveur
  * 
- * @param argc 
- * @param argv 
- * @return int 
+ * @param argc prend 1 argument
+ * @param argv le nom de l'executable et le port
  */
 int main(int argc, char **argv){
     if(argc != 2) {
