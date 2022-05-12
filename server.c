@@ -4,6 +4,11 @@
 
 char ctrlC[10];
 
+/**
+ * @brief 
+ * 
+ * @param sig 
+ */
 void ctrlCHandler(int sig){
 
     printf("CTRL+C sur le serveur :: arret en cours...");
@@ -11,6 +16,12 @@ void ctrlCHandler(int sig){
 
 }
 
+/**
+ * @brief 
+ * 
+ * @param port 
+ * @return int 
+ */
 int initSocketServer(int port){
 
   int sockfd = ssocket();
@@ -20,6 +31,13 @@ int initSocketServer(int port){
 
 }
 
+/**
+ * @brief 
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int main(int argc, char **argv){
     if(argc != 2) {
         printf("usage : ./server [port]\n");

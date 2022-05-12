@@ -6,6 +6,13 @@
 
 #define LIMITE -1500
 
+/**
+ * @brief 
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int main(int argc, char *argv[]){ 
     if(argc != 3) {
         printf("usage : ./pdr [no compte destination] [montant]\n");

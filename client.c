@@ -11,9 +11,34 @@
 #define HEARTBEAT -1
 #define VIREMENT 0
 
+/**
+ * @brief 
+ * 
+ * @param pipefd 
+ */
 void virementRecurrentHandler(void* pipefd);
+
+/**
+ * @brief 
+ * 
+ * @param pipefd 
+ */
 void minuterieHandler(void* pipefd);
+
+/**
+ * @brief 
+ * 
+ * @param PIDVirementReccurent 
+ * @param PIDMinuterie 
+ */
 void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie);
+
+/**
+ * @brief 
+ * 
+ * @param response 
+ * @param print 
+ */
 void envoyerVirement(ResponseClient response, bool print);
 
 char* adresse;
@@ -21,7 +46,13 @@ int portServeur;
 int numeroCompte;
 int delais;
 
-
+/**
+ * @brief 
+ * 
+ * @param argc 
+ * @param arg 
+ * @return int 
+ */
 int main(int argc, char *arg[]) {
     if(argc != 5) {
         printf("usage : ./client [IP address] [port] [no compte destination] [delais]\n");

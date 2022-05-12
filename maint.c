@@ -8,7 +8,13 @@
 #include "config.h"
 #include "utils_v1.h"
 
-
+/**
+ * @brief permet de créer, detruire ou réserver la memoire partagee et semaphore 
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int main (int argc , char *argv[]){
     if(argc != 2) {
         printf("usage : ./maint [option]\n");
