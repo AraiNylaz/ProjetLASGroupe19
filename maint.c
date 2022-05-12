@@ -38,11 +38,11 @@ int main (int argc , char *argv[]){
     //réserve la mémoire partagée
         sem_id = sem_get(SEMKEY,1);
         shm_id = sshmget(SHMKEY,NBRCOMPTESENBANQUE*sizeof(int),0|PERM);
-        int* z =sshmat(shm_id);
+        int* livreDeCompte = sshmat(shm_id);
         sem_down0(sem_id);
         sleep(atoi(argv[2]));
         sem_up0(sem_id);
-        sshmdt(z);
+        sshmdt(livreDeCompte);
         break;
     default:
         printf("type non valide \n");

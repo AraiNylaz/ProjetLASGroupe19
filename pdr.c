@@ -22,12 +22,7 @@ int main(int argc, char *argv[]){
     }
     livreDeCompte = sshmat(shm_id);
     livreDeCompte[numCompte - 1].noCompte = numCompte;
-    for (int  i = 0; i < 3; i++)
-    {
-        printf("livreComte %i :: %i\n", i, livreDeCompte[i].solde);
-        printf("no compte %i :: %i\n", i, livreDeCompte[i].noCompte);
-    }
-    if (livreDeCompte[numCompte - 1].solde - montant > LIMITE){
+    if (livreDeCompte[numCompte - 1].solde + montant >= LIMITE){
         sem_down0(sem_id);
          //TODO ajouter une linite max
          //printf("passe ici ! %i\n", montant);

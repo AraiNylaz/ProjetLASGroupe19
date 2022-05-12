@@ -2,7 +2,7 @@
 #include "config.h"
 #include "utils_v1.h"
 
-char ctrlC[100];
+char ctrlC[10];
 
 void ctrlCHandler(int sig){
 
@@ -42,12 +42,12 @@ int main(int argc, char **argv){
 
     int sem_id, shm_id;
 
-    struct ResponseClient responseClient;
+    struct ResponseClient reponseClient;
     int montantResponse;
     int numeroCompteSource;
     int numeroCompteDestination;
     struct CompteEnBanque *tabCompte; //tableau de comptes
-    struct ResponseServer responseServer;
+    struct ResponseServer reponseServeur;
 
     //tant que ! ctrlC --> run
     while (true) {
@@ -56,10 +56,10 @@ int main(int argc, char **argv){
         int newsockfd = saccept(sockfd);
         //va chercher les valeurs envoyees par le client
         printf("nouvelle connexion client\n");
-        sread(newsockfd, &responseClient, sizeof(responseClient));
-        numeroCompteSource = responseClient.noCompteSource - 1;
-        montantResponse = responseClient.montant;
-        numeroCompteDestination = responseClient.noCompteDestination - 1;
+        sread(newsockfd, &reponseClient, sizeof(reponseClient));
+        numeroCompteSource = reponseClient.noCompteSource - 1;
+        montantResponse = reponseClient.montant;
+        numeroCompteDestination = reponseClient.noCompteDestination - 1;
         printf("response %i + %i + %i\n", numeroCompteDestination, numeroCompteSource, montantResponse);
 
         // allocation des 1000 comptes de la banque     
@@ -75,54 +75,39 @@ int main(int argc, char **argv){
         sem_id = sem_get(SEMKEY, 1);
         tabCompte = sshmat(shm_id);
 
+        // si id du compte pas ok
+        if(numeroCompteSource < 0 || numeroCompteSource > 1000) {
+            reponseServeur.solde = 0;
+            reponseServeur.code = NOCOMPTEINVALIDE;
+            swrite(newsockfd, &reponseServeur, sizeof(reponseServeur));
+            continue;
+        }            
+        //si solde insiffisant
+        printf("solde compte --> %i\n", tabCompte[reponseClient.noCompteSource].solde);
+        if(tabCompte[numeroCompteSource].solde - montantResponse < 0){
+            reponseServeur.solde = 0;
+            reponseServeur.code = SOLDEINSUFFISANT;
+            swrite(newsockfd, &reponseServeur, sizeof(reponseServeur));
+            continue;
+        }
+        printf("virement de %i € vers le compte %i de la part du compte %i.\n", montantResponse, numeroCompteDestination, numeroCompteSource);
+        
+        sem_down0(sem_id);
+        //else modifications des montants
+        tabCompte[numeroCompteSource].solde -= montantResponse;
+        tabCompte[numeroCompteDestination].solde += montantResponse;
 
-        for (int i = 0; i < 3; i++)
-            {
-                printf("malloc1 == %i + %i\n", tabCompte[i].noCompte, tabCompte[i].solde);
-            }   
-            
-        //for (int i = 0; i < NBRCOMPTESENBANQUE; i++)
-        //{
-            // si id du compte pas ok
-            if(numeroCompteSource < 0 || numeroCompteSource > 1000) {
-                responseServer.solde = 0;
-                responseServer.code = NOCOMPTEINVALIDE;
-                swrite(newsockfd, &responseServer, sizeof(responseServer));
-                continue;
-            }
-            //prends la main
-            sem_down0(sem_id);
-            //si solde insiffisant
-            printf("solde compte --> %i\n", tabCompte[responseClient.noCompteSource].solde);
-            if(tabCompte[numeroCompteSource].solde - montantResponse < 0){
-                responseServer.solde = 0;
-                responseServer.code = SOLDEINSUFFISANT;
-                swrite(newsockfd, &responseServer, sizeof(responseServer));
-                continue;
-            }
-            printf("virement de %i € vers le compte %i de la part du compte %i.\n", montantResponse, numeroCompteDestination, numeroCompteSource);
-            //else modifications des montants
-            tabCompte[numeroCompteSource].solde -= montantResponse;
-            tabCompte[numeroCompteDestination].solde += montantResponse;
+        printf("balance du compte source %i : %i\n", tabCompte[numeroCompteSource], tabCompte[numeroCompteSource].solde);
+        printf("balance du compte destination %i : %i\n", tabCompte[numeroCompteSource], tabCompte[numeroCompteDestination].solde);
+        
+        reponseServeur.solde = tabCompte[numeroCompteSource].solde;
+        reponseServeur.code = CODEOK;
+        //envoi au client
+        swrite(newsockfd, &reponseServeur, sizeof(reponseServeur));
 
-            printf("balance du compte source : %i\n", tabCompte[numeroCompteSource].solde);
-            printf("balance du compte destination : %i\n", tabCompte[numeroCompteDestination].solde);
-            
-            responseServer.solde = tabCompte[numeroCompteSource].solde;
-            responseServer.code = CODEOK;
-            //envoi au client
-            swrite(newsockfd, &responseServer, sizeof(responseServer));
-
-            for (int i = 0; i < 3; i++)
-            {
-                printf("malloc2 == %i + %i\n", tabCompte[i].noCompte, tabCompte[i].solde);
-            }   
-            //printf("fin action de client\n");
-            //redonne la main
-            sem_up0(sem_id);
-            
-        //}
-            
+        //redonne la main
+        sem_up0(sem_id);
+        
     }
 
     //fermeture propre    

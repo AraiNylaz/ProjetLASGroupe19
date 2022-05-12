@@ -15,10 +15,10 @@ void minuterieHandler(void* pipefd);
 void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie);
 void envoyerVirement(ResponseClient response);
 
-char* ADRESSE;
-int SERVER_PORT;
-int NUMERO_COMPTE;
-int DELAIS;
+char* adresse;
+int portServeur;
+int numeroCompte;
+int delais;
 
 
 int main(int argc, char *arg[]) {
@@ -26,10 +26,10 @@ int main(int argc, char *arg[]) {
         printf("usage : ./client [IP address] [port] [no compte destination] [delais]\n");
         _exit(2);
     }
-    ADRESSE = arg[1];
-    SERVER_PORT = atoi(arg[2]);
-    NUMERO_COMPTE = atoi(arg[3]);
-    DELAIS = atoi(arg[4]);
+    adresse = arg[1];
+    portServeur = atoi(arg[2]);
+    numeroCompte = atoi(arg[3]);
+    delais = atoi(arg[4]);
 
     int pipefd[2];
     spipe(pipefd);
@@ -45,8 +45,6 @@ int main(int argc, char *arg[]) {
         val[ret-1] = '\0';
 
         char prefix = val[0];
-
-        
         char compte[4];
         char montant[MAXCHAR];
         int indexVal = 2;
@@ -70,7 +68,7 @@ int main(int argc, char *arg[]) {
         
         ResponseClient virement;
         virement.montant = atoi(montant);
-        virement.noCompteSource = NUMERO_COMPTE;
+        virement.noCompteSource = numeroCompte;
         virement.noCompteDestination = atoi(compte);
 
         Transfer transfert;
@@ -122,7 +120,7 @@ void virementRecurrentHandler(void* pipefd){
 
 void minuterieHandler(void* pipefd){
     int *pipe = pipefd;
-    int delaisMinuterie = DELAIS;
+    int delaisMinuterie = delais;
     ResponseClient temp = {0, 0, 0};
     Transfer heartbeat = {HEARTBEAT, temp};
     while(true){
@@ -140,7 +138,7 @@ void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie){
 
 void envoyerVirement(ResponseClient virement){
     int sockfd = ssocket();
-    sconnect(ADRESSE, SERVER_PORT, sockfd);
+    sconnect(adresse, portServeur, sockfd);
     ResponseClient data = virement;
     swrite(sockfd, &data, sizeof(ResponseClient));
 
@@ -155,7 +153,4 @@ void envoyerVirement(ResponseClient virement){
     }
     sclose(sockfd);
 
-
-//TODO close client après 1 (une) action
-//virement recurent pour chaque virement open et close la connection
 }

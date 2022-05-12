@@ -33,12 +33,6 @@ int noCompte;
 int solde;
 }CompteEnBanque;
 
-struct Banque{
- int comptes[NBRCOMPTESENBANQUE];
-} Banque;
-
-
-
 typedef struct ResponseClient{
   int montant;
   int noCompteSource;
