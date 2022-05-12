@@ -7,14 +7,13 @@
 #define HEARTBEAT -1
 #define VIREMENT 0
 
-<<<<<<< HEAD
 /*
 PRE : pipefd != NULL
 POST : crée le handle des virements récurents
 ce dernier envoye une série de virement inscrit au
 préalable au serveur à chaque fois qu'il read
 un heartbeat 
-*/ : 
+*/  
 void virementRecurrentHandler(void* pipefd);
 
 /*
@@ -36,36 +35,6 @@ PRE : response != NULL
 POST : envoye une structure ResponseClient au serveur et 
 printf si print est à true ou non si print est à false
 */ 
-=======
-/**
- * @brief 
- * 
- * @param pipefd 
- */
-void virementRecurrentHandler(void* pipefd);
-
-/**
- * @brief 
- * 
- * @param pipefd 
- */
-void minuterieHandler(void* pipefd);
-
-/**
- * @brief 
- * 
- * @param PIDVirementReccurent 
- * @param PIDMinuterie 
- */
-void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie);
-
-/**
- * @brief 
- * 
- * @param response 
- * @param print 
- */
->>>>>>> 77080138db6fface87f23cafc0e80d3c2584c556
 void envoyerVirement(ResponseClient response, bool print);
 
 char* adresse;

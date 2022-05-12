@@ -79,7 +79,6 @@ int main(int argc, char **argv){
         numeroCompteSource = reponseClient.noCompteSource - 1;
         montantResponse = reponseClient.montant;
         numeroCompteDestination = reponseClient.noCompteDestination - 1;
-        printf("response %i + %i + %i\n", numeroCompteDestination, numeroCompteSource, montantResponse);
 
         // allocation des 1000 comptes de la banque     
         if((tabCompte = (CompteEnBanque*)malloc((sizeof(CompteEnBanque) * NBRCOMPTESENBANQUE))) == NULL){

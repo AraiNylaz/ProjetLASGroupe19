@@ -5,12 +5,12 @@
 /**
  * @brief permet de créer, detruire ou réserver la memoire partagee et semaphore 
  * 
- * @param argc prend 1 argument
+ * @param argc prend 2 arguments
  * @param argv l'option possible : 1, 2 ou 3 
  */
 int main (int argc , char *argv[]){
-    if(argc != 2) {
-        printf("usage : ./maint [option]\n");
+    if(argc > 2 && argc < 3) {
+        printf("usage : ./maint [option] [temps]\n");
         _exit(2);
     }
     int type= atoi(argv[1]) ;
