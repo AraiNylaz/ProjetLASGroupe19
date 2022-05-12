@@ -1,18 +1,22 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
+#include <signal.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <signal.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
 #include <sys/ipc.h>
+
+#include <arpa/inet.h>
+#include <netinet/in.h>
 
 #define SERVER_IP		"127.0.0.1"  /* localhost */
 
