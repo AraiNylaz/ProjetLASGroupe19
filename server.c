@@ -97,8 +97,8 @@ int main(int argc, char **argv){
         tabCompte[numeroCompteSource].solde -= montantResponse;
         tabCompte[numeroCompteDestination].solde += montantResponse;
 
-        printf("balance du compte source %i : %i\n", tabCompte[numeroCompteSource], tabCompte[numeroCompteSource].solde);
-        printf("balance du compte destination %i : %i\n", tabCompte[numeroCompteSource], tabCompte[numeroCompteDestination].solde);
+        printf("balance du compte source %i : %i\n", numeroCompteSource, tabCompte[numeroCompteSource].solde);
+        printf("balance du compte destination %i : %i\n", numeroCompteSource, tabCompte[numeroCompteDestination].solde);
         
         reponseServeur.solde = tabCompte[numeroCompteSource].solde;
         reponseServeur.code = CODEOK;

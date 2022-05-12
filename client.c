@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <unistd.h>
 
 #include "utils_v1.h"
@@ -13,7 +14,7 @@
 void virementRecurrentHandler(void* pipefd);
 void minuterieHandler(void* pipefd);
 void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie);
-void envoyerVirement(ResponseClient response);
+void envoyerVirement(ResponseClient response, bool print);
 
 char* adresse;
 int portServeur;
@@ -80,7 +81,7 @@ int main(int argc, char *arg[]) {
             quit(PIDVirementReccurent, PIDMinuterie);
         }else if(prefix == '+'){
             //virement
-            envoyerVirement(virement);
+            envoyerVirement(virement, true);
         }else if(prefix == '*'){
             //virement récurrent
             swrite(pipefd[1], &transfert, sizeof(Transfer));
@@ -107,12 +108,9 @@ void virementRecurrentHandler(void* pipefd){
         if(buffer.type != HEARTBEAT){
             tabCompte[index] = buffer.response;
             index++;
-            printf("%s %i\n", "compte ajouté : ", tabCompte[index-1].noCompteDestination);
         } else {
             for (size_t i = 0; i < index; i++){
-                printf("%i\n", tabCompte[i].noCompteDestination);
-                //virement
-                envoyerVirement(tabCompte[i]);
+                envoyerVirement(tabCompte[i], false);
             }
         }
     }
@@ -136,7 +134,7 @@ void quit(pid_t PIDVirementReccurent, pid_t PIDMinuterie){
     _exit(0);
 }
 
-void envoyerVirement(ResponseClient virement){
+void envoyerVirement(ResponseClient virement, bool print){
     int sockfd = ssocket();
     sconnect(adresse, portServeur, sockfd);
     ResponseClient data = virement;
@@ -144,13 +142,16 @@ void envoyerVirement(ResponseClient virement){
 
     ResponseServer response;
     sread(sockfd, &response, sizeof(ResponseServer));
-    if(response.code == NOCOMPTEINVALIDE) {
-        printf(STRINGCOMPTEINVALIDE);
-    } else if(response.code == SOLDEINSUFFISANT) {
-        printf(STRINGSOLDEINSUFFISANT);
-    } else if (response.code == CODEOK) {
-        printf("montant restant sur votre compte : %i\n", response.solde);
+    if(print) {
+        if(response.code == NOCOMPTEINVALIDE) {
+            printf(STRINGCOMPTEINVALIDE);
+        } else if(response.code == SOLDEINSUFFISANT) {
+            printf(STRINGSOLDEINSUFFISANT);
+        } else if (response.code == CODEOK) {
+            printf("montant restant sur votre compte : %i\n", response.solde);
+        }
     }
+    
     sclose(sockfd);
 
 }
